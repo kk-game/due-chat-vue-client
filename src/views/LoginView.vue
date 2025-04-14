@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { connectWebSocket } from '@/utils/websocket'
+import { webHost } from '@/utils/const'
 
 const router = useRouter()
 const account = ref('admin123') // 设置默认值
@@ -10,7 +11,7 @@ const message = ref('')
 
 const register = async () => {
   try {
-    const response = await fetch('http://192.168.110.42:8099/register', {
+    const response = await fetch(webHost + 'register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -34,7 +35,7 @@ const register = async () => {
 
 const login = async () => {
   try {
-    const response = await fetch('http://192.168.110.42:8099/login', {
+    const response = await fetch(webHost + 'login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ account: account.value, password: password.value }),
