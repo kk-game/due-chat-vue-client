@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { connectWebSocket } from '@/utils/websocket'
 
 const router = useRouter()
 const account = ref('admin123') // 设置默认值
@@ -46,18 +47,25 @@ const login = async () => {
     }
 
     const back = result.data
-    console.log(result.data)
+    console.log(JSON.stringify(result.data))
+
     if (back.gate && back.token) {
+      localStorage.setItem('account', account.value)
+      localStorage.setItem('password', password.value)
+      localStorage.setItem('gate', back.gate)
+      localStorage.setItem('token', back.token)
       const wsUrl = `${back.gate}/?token=${back.token}`
       console.log('WebSocket URL:', wsUrl)
-      const socket = new WebSocket(wsUrl)
-      socket.onopen = () => {
-        message.value = '登录成功，正在跳转...'
-        router.push('/home')
-      }
-      socket.onerror = () => {
-        message.value = 'WebSocket 连接失败'
-      }
+      connectWebSocket(
+        wsUrl,
+        () => {
+          message.value = '登录成功，正在跳转...'
+          router.push('/home')
+        },
+        () => {
+          message.value = 'WebSocket 连接失败'
+        },
+      )
     } else {
       message.value = '登录失败'
     }
@@ -84,13 +92,17 @@ const login = async () => {
 
 <style scoped>
 .login {
+  position: fixed; /* 确保页面盛满整个屏幕 */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
   margin: 0;
   padding: 0;
-  background: linear-gradient(135deg, #74ebd5, #acb6e5);
+  background: linear-gradient(135deg, #0288c6, #5a2ac3);
   overflow: hidden;
 }
 

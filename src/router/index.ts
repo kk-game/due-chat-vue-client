@@ -26,4 +26,13 @@ const router = createRouter({
   ],
 })
 
+// 确保刷新时总是从启动流程开始
+router.beforeEach((to, from, next) => {
+  if (to.name !== 'login' && !localStorage.getItem('account')) {
+    next({ name: 'login' })
+  } else {
+    next()
+  }
+})
+
 export default router
