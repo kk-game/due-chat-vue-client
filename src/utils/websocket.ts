@@ -10,7 +10,7 @@ export const connectWebSocket = (wsUrl: string, onOpen: () => void, onError: () 
       byteOrder: 'big',
       seqBytes: 4,
       routeBytes: 4,
-      bufferBytes: 5000,
+      bufferBytes: 5000000, //5MB
     }),
   })
 
