@@ -1,9 +1,24 @@
 @import './base.css';
 
+/* 重置默认样式 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
   font-weight: normal;
 }
 
@@ -12,7 +27,6 @@ a,
   text-decoration: none;
   color: hsla(160, 100%, 37%, 1);
   transition: 0.4s;
-  padding: 3px;
 }
 
 @media (hover: hover) {
@@ -21,15 +35,12 @@ a,
   }
 }
 
+/* 移除桌面端的特殊布局，保持移动端的样式一致性 */
 @media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
   #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
   }
 }

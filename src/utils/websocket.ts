@@ -10,7 +10,7 @@ export const connectWebSocket = (wsUrl: string, onOpen: () => void, onError: () 
       byteOrder: 'big',
       seqBytes: 4,
       routeBytes: 4,
-      bufferBytes: 5000000, //5MB
+      bufferBytes: 5000000, //5MB,需要跟服务器配置一样
     }),
   })
 
@@ -48,7 +48,7 @@ export const connectWebSocket = (wsUrl: string, onOpen: () => void, onError: () 
     )
   })
 
-  client.onHeartbeat((c, millisecond) => {
+  client.onHeartbeat((_c, millisecond) => {
     if (millisecond) {
       console.log('服务器心跳时间戳: ', millisecond)
     }

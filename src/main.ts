@@ -8,7 +8,6 @@ import router from './router'
 import { connectWebSocket } from '@/utils/websocket'
 
 const app = createApp(App)
-
 app.use(createPinia())
 app.use(router)
 
@@ -26,7 +25,6 @@ const initializeApp = async () => {
     connectWebSocket(
       wsUrl,
       () => {
-        console.log('WebSocket 连接成功')
         router.replace('/home') //登录成功后跳转到主界面
       },
       () => {
