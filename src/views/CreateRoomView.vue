@@ -1,16 +1,20 @@
 <script setup lang="ts">
 import { ref, defineEmits } from 'vue'
-import { useRouter } from 'vue-router'
 
-const router = useRouter()
 const emit = defineEmits(['close'])
+
 const title = ref('')
 const desc = ref('')
 const bgUrl = ref('')
 
 const onSubmit = () => {
-  // TODO: 实现创建聊天室逻辑
-  router.back()
+  // TODO: 实现创建聊天室逻辑，例如发送到后端
+  console.log('创建聊天室:', { title: title.value, desc: desc.value, bgUrl: bgUrl.value })
+
+  // 自动关闭模态弹窗
+  emit('close')
+  // 可选：跳转回首页或其他页面
+  // router.push('/')
 }
 
 const onClose = () => {
@@ -38,7 +42,7 @@ const onClose = () => {
 
       <div class="form-item">
         <label>背景图片</label>
-        <input v-model="bgUrl" type="text" placeholder="输入背景图片URL" required />
+        <input v-model="bgUrl" type="text" placeholder="输入背景图片 URL" required />
       </div>
 
       <button type="submit" class="submit-btn">创建</button>
@@ -48,11 +52,27 @@ const onClose = () => {
 
 <style scoped>
 .create-room {
-  width: 100%;
+  width: 90vw;
+  max-width: 400px;
   max-height: 90vh;
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  animation: fadeInUp 0.3s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .modal-header {
@@ -61,6 +81,7 @@ const onClose = () => {
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid #eee;
+  background-color: #f8f8f8;
 }
 
 .modal-header h2 {
@@ -103,6 +124,7 @@ const onClose = () => {
   border: 1px solid #ddd;
   border-radius: 0.5rem;
   font-size: 1rem;
+  outline: none;
 }
 
 .form-item textarea {
@@ -119,5 +141,11 @@ const onClose = () => {
   border-radius: 0.5rem;
   font-size: 1rem;
   font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.submit-btn:hover {
+  background: #369d6c;
 }
 </style>

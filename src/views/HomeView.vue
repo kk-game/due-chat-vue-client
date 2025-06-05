@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import ListView from './ListView.vue'
 import ContactView from './ContactView.vue'
 import SelfView from './SelfView.vue'
+import CreateRoomView from './CreateRoomView.vue'
 
 const chatStr = 'chat'
 const contactStr = 'contact'
@@ -11,9 +12,46 @@ const currentTab = ref('chat')
 const activeColor = '#42b983'
 const inactiveColor = '#888'
 
-// const navBgColor = computed(() => (currentTab.value ? '#e0e0e0' : '#f8f8f8')) // 选中时加深
-
 const getIconColor = (tab: string) => (currentTab.value === tab ? activeColor : inactiveColor)
+
+const showModal = ref(false)
+
+// 浮动按钮位置
+const pos = ref({ x: 300, y: window.innerHeight - 120 })
+
+let isDragging = false
+let offsetX = 0
+let offsetY = 0
+
+const startDrag = (e: MouseEvent | TouchEvent) => {
+  isDragging = true
+  const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
+  const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
+  offsetX = clientX - pos.value.x
+  offsetY = clientY - pos.value.y
+
+  document.addEventListener('mousemove', onDrag)
+  document.addEventListener('mouseup', stopDrag)
+  document.addEventListener('touchmove', onDrag, { passive: false })
+  document.addEventListener('touchend', stopDrag)
+}
+
+const onDrag = (e: MouseEvent | TouchEvent) => {
+  if (!isDragging) return
+  const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
+  const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
+
+  pos.value.x = Math.min(window.innerWidth - 60, Math.max(0, clientX - offsetX))
+  pos.value.y = Math.min(window.innerHeight - 100, Math.max(0, clientY - offsetY))
+}
+
+const stopDrag = () => {
+  isDragging = false
+  document.removeEventListener('mousemove', onDrag)
+  document.removeEventListener('mouseup', stopDrag)
+  document.removeEventListener('touchmove', onDrag)
+  document.removeEventListener('touchend', stopDrag)
+}
 </script>
 
 <template>
@@ -30,13 +68,7 @@ const getIconColor = (tab: string) => (currentTab.value === tab ? activeColor : 
         :class="{ active: currentTab === chatStr }"
         @click="currentTab = chatStr"
       >
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
           <path
             :stroke="getIconColor(chatStr)"
             stroke-width="2"
@@ -51,13 +83,7 @@ const getIconColor = (tab: string) => (currentTab.value === tab ? activeColor : 
         :class="{ active: currentTab === contactStr }"
         @click="currentTab = contactStr"
       >
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
           <circle
             cx="10"
             cy="7"
@@ -80,13 +106,7 @@ const getIconColor = (tab: string) => (currentTab.value === tab ? activeColor : 
         :class="{ active: currentTab === selfStr }"
         @click="currentTab = selfStr"
       >
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
           <circle
             cx="10"
             cy="10"
@@ -107,6 +127,22 @@ const getIconColor = (tab: string) => (currentTab.value === tab ? activeColor : 
         <div>我</div>
       </button>
     </nav>
+
+    <!-- 浮动按钮 -->
+    <div
+      class="floating-button"
+      :style="{ left: pos.x + 'px', top: pos.y + 'px' }"
+      @mousedown="startDrag"
+      @touchstart.prevent="startDrag"
+      @click="showModal = true"
+    >
+      +
+    </div>
+
+    <!-- 模态创建房间 -->
+    <div class="modal-view" v-if="showModal" @click.self="showModal = false">
+      <CreateRoomView @close="showModal = false" />
+    </div>
   </div>
 </template>
 
@@ -138,7 +174,6 @@ const getIconColor = (tab: string) => (currentTab.value === tab ? activeColor : 
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* 适配圆角屏幕底部安全区 */
 nav {
   padding-bottom: env(safe-area-inset-bottom);
 }
@@ -164,5 +199,34 @@ nav button.active {
 
 nav button svg {
   margin-bottom: 2px;
+}
+
+.floating-button {
+  position: fixed;
+  width: 50px;
+  height: 50px;
+  background-color: #42b983;
+  color: white;
+  font-size: 32px;
+  text-align: center;
+  line-height: 50px;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  cursor: grab;
+  user-select: none;
+}
+
+.modal-view {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
