@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import ListView from './ListView.vue'
 import ContactView from './ContactView.vue'
 import SelfView from './SelfView.vue'
 
+const chatStr = 'chat'
+const contactStr = 'contact'
+const selfStr = 'self'
 const currentTab = ref('chat')
 const activeColor = '#42b983'
 const inactiveColor = '#888'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const navBgColor = computed(() => (currentTab.value ? '#e0e0e0' : '#f8f8f8')) // 选中时加深
+
+// const navBgColor = computed(() => (currentTab.value ? '#e0e0e0' : '#f8f8f8')) // 选中时加深
 
 const getIconColor = (tab: string) => (currentTab.value === tab ? activeColor : inactiveColor)
 </script>
@@ -17,15 +20,15 @@ const getIconColor = (tab: string) => (currentTab.value === tab ? activeColor : 
   <div class="app-container">
     <main class="main-content">
       <component
-        :is="currentTab === 'chat' ? ListView : currentTab === 'contact' ? ContactView : SelfView"
+        :is="currentTab === chatStr ? ListView : currentTab === contactStr ? ContactView : SelfView"
       />
     </main>
 
     <nav class="bottom-nav">
       <button
         style="flex: 1"
-        :class="{ active: currentTab === 'chat' }"
-        @click="currentTab = 'chat'"
+        :class="{ active: currentTab === chatStr }"
+        @click="currentTab = chatStr"
       >
         <svg
           width="20"
@@ -35,7 +38,7 @@ const getIconColor = (tab: string) => (currentTab.value === tab ? activeColor : 
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            :stroke="getIconColor('chat')"
+            :stroke="getIconColor(chatStr)"
             stroke-width="2"
             fill="none"
             d="M2 3h16v12H5l-3 3V3z"
@@ -45,8 +48,8 @@ const getIconColor = (tab: string) => (currentTab.value === tab ? activeColor : 
       </button>
       <button
         style="flex: 1"
-        :class="{ active: currentTab === 'contact' }"
-        @click="currentTab = 'contact'"
+        :class="{ active: currentTab === contactStr }"
+        @click="currentTab = contactStr"
       >
         <svg
           width="20"
@@ -59,13 +62,13 @@ const getIconColor = (tab: string) => (currentTab.value === tab ? activeColor : 
             cx="10"
             cy="7"
             r="4"
-            :stroke="getIconColor('contact')"
+            :stroke="getIconColor(contactStr)"
             stroke-width="2"
             fill="none"
           />
           <path
             d="M2 18c0-3.3137 3.134-6 7-6s7 2.6863 7 6"
-            :stroke="getIconColor('contact')"
+            :stroke="getIconColor(contactStr)"
             stroke-width="2"
             fill="none"
           />
@@ -74,8 +77,8 @@ const getIconColor = (tab: string) => (currentTab.value === tab ? activeColor : 
       </button>
       <button
         style="flex: 1"
-        :class="{ active: currentTab === 'self' }"
-        @click="currentTab = 'self'"
+        :class="{ active: currentTab === selfStr }"
+        @click="currentTab = selfStr"
       >
         <svg
           width="20"
@@ -88,7 +91,7 @@ const getIconColor = (tab: string) => (currentTab.value === tab ? activeColor : 
             cx="10"
             cy="10"
             r="8"
-            :stroke="getIconColor('self')"
+            :stroke="getIconColor(selfStr)"
             stroke-width="2"
             fill="none"
           />
@@ -96,7 +99,7 @@ const getIconColor = (tab: string) => (currentTab.value === tab ? activeColor : 
             cx="10"
             cy="8"
             r="3"
-            :stroke="getIconColor('self')"
+            :stroke="getIconColor(selfStr)"
             stroke-width="2"
             fill="none"
           />

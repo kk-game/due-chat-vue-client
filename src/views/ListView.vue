@@ -2170,8 +2170,7 @@ const chatRooms = ref<ChatRoom[]>([
 .chat-list {
   margin-top: 10px; /* 与 header 的间隔 */
   height: calc(
-    100vh - 60px /* header */ - env(safe-area-inset-top, 20px) - 60px /* footer */ -
-      env(safe-area-inset-bottom, 0px) - 20px /* top + bottom margin */
+    100vh - 60px - env(safe-area-inset-top, 20px) - 60px - env(safe-area-inset-bottom, 0px) - 20px
   );
   width: 100vw;
   overflow: auto;

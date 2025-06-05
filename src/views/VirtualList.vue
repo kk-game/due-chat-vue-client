@@ -1,6 +1,8 @@
 <template>
   <div ref="container" class="container" @scroll="handleScroll">
+    <!-- 这个是用来撑开父级div高度的 -->
     <div class="placeholder" :style="{ height: listHeight + 'px' }"></div>
+    <!-- 这里才是真的内容 -->
     <div class="list-wrapper" :style="{ transform: getTransform }">
       <div
         v-for="item in renderList"
@@ -84,5 +86,6 @@ function handleScroll(e: Event) {
 }
 .card-item {
   box-sizing: border-box;
+  margin-bottom: 0; /* 确保没有意外间距 */
 }
 </style>
