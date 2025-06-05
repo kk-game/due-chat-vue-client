@@ -2182,8 +2182,8 @@ const chatRooms = ref<ChatRoom[]>([
   display: flex;
   align-items: center;
   height: 130px;
-  width: 90vw;
-  margin-left: 5vw;
+  width: 96vw;
+  margin-left: 2vw;
   padding: 16px 24px;
   border-radius: 12px;
   background-size: cover;
