@@ -139,10 +139,11 @@ const getIconColor = (tab: string) => (currentTab.value === tab ? activeColor : 
 nav {
   padding-bottom: env(safe-area-inset-bottom);
 }
+
 nav button {
   background: none;
   border: none;
-  font-size: 16px;
+  font-size: 0.7rem;
   padding: 10px 0 0 0;
   display: flex;
   flex-direction: column;
@@ -151,11 +152,13 @@ nav button {
   color: #888;
   transition: color 0.2s;
 }
+
 nav button.active {
   color: #42b983;
   font-weight: bold;
   background: #d0f0e0;
 }
+
 nav button svg {
   margin-bottom: 2px;
 }
