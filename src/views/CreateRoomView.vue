@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { EvtCloseCreateRoomView } from '@/utils/const'
 import { ref, defineEmits } from 'vue'
 
-const emit = defineEmits(['close'])
+//这里定义了一个事件，用于关闭创建聊天室的视图
+const emit = defineEmits([EvtCloseCreateRoomView])
 
 const title = ref('')
 const desc = ref('')
@@ -12,13 +14,13 @@ const onSubmit = () => {
   console.log('创建聊天室:', { title: title.value, desc: desc.value, bgUrl: bgUrl.value })
 
   // 自动关闭模态弹窗
-  emit('close')
+  emit(EvtCloseCreateRoomView)
   // 可选：跳转回首页或其他页面
   // router.push('/')
 }
 
 const onClose = () => {
-  emit('close')
+  emit(EvtCloseCreateRoomView)
 }
 </script>
 

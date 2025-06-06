@@ -2113,7 +2113,7 @@ const chatRooms = ref<ChatRoom[]>([
     active: 79,
   },
 ])
-const createRoomViewShow = ref(true)
+const createRoomViewShow = ref(false)
 </script>
 
 <template>
@@ -2138,18 +2138,18 @@ const createRoomViewShow = ref(true)
       </VirtualList>
     </div>
 
-    <!-- <div clase="create-room-btn">
-      <button @click="createRoomViewShow = true">创建房间</button>
-    </div> -->
-
+    <!-- 创建房间按钮 -->
     <div class="create-room-btn">
-      <button class="create-btn" @click="createRoomViewShow = false">+</button>
+      <button class="create-btn" @click="createRoomViewShow = true">+</button>
     </div>
 
     <!-- 模态创建房间 -->
     <div class="modal-mask" v-if="createRoomViewShow" @click.self="createRoomViewShow = false">
       <div class="modal-content">
-        <CreateRoomView class="create-room-view" @close="createRoomViewShow = false" />
+        <CreateRoomView
+          class="create-room-view"
+          @EvtCloseCreateRoomView="createRoomViewShow = false"
+        />
       </div>
     </div>
   </div>
