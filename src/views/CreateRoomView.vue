@@ -25,7 +25,7 @@ const onClose = () => {
 <template>
   <div class="create-room">
     <header class="modal-header">
-      <h2>创建聊天室</h2>
+      <div class="title-box">创建聊天室</div>
       <button class="close-btn" @click="onClose">×</button>
     </header>
 
@@ -64,38 +64,26 @@ const onClose = () => {
   animation: fadeInUp 0.3s ease;
 }
 
-@keyframes fadeInUp {
-  from {
-    transform: translateY(30px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
 .modal-header {
-  padding: env(safe-area-inset-top) 1rem 1rem;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: center; /* 垂直居中 */
+  justify-content: space-between; /* 左右分散 */
+  padding: 10px 1rem;
   border-bottom: 1px solid #eee;
-  background-color: #f8f8f8;
+  background-color: #fff;
 }
 
-.modal-header h2 {
-  margin: 0;
+.title-box {
   font-size: 1.2rem;
-  color: #333;
+  font-weight: 600;
+  color: #505050;
 }
 
 .close-btn {
   border: none;
   background: none;
-  font-size: 1.5rem;
+  font-size: 2rem;
   color: #666;
-  padding: 0.5rem;
   cursor: pointer;
 }
 
@@ -142,7 +130,6 @@ const onClose = () => {
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s;
 }
 
 .submit-btn:hover {

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CreateRoomView from './CreateRoomView.vue'
 import VirtualList from './VirtualList.vue'
 import { ref } from 'vue'
 
@@ -2112,6 +2113,7 @@ const chatRooms = ref<ChatRoom[]>([
     active: 79,
   },
 ])
+const createRoomViewShow = ref(true)
 </script>
 
 <template>
@@ -2134,6 +2136,21 @@ const chatRooms = ref<ChatRoom[]>([
           </div>
         </template>
       </VirtualList>
+    </div>
+
+    <!-- <div clase="create-room-btn">
+      <button @click="createRoomViewShow = true">创建房间</button>
+    </div> -->
+
+    <div class="create-room-btn">
+      <button class="create-btn" @click="createRoomViewShow = false">+</button>
+    </div>
+
+    <!-- 模态创建房间 -->
+    <div class="modal-mask" v-if="createRoomViewShow" @click.self="createRoomViewShow = false">
+      <div class="modal-content">
+        <CreateRoomView class="create-room-view" @close="createRoomViewShow = false" />
+      </div>
     </div>
   </div>
 </template>
@@ -2224,5 +2241,84 @@ const chatRooms = ref<ChatRoom[]>([
 .active {
   font-size: 0.9rem;
   color: #a6e1ff; /* 亮一点的颜色 */
+}
+
+/* +创建房间按钮 */
+.create-room-btn {
+  position: fixed;
+  right: 30px;
+  bottom: calc(env(safe-area-inset-bottom) + 130px);
+  z-index: 1000;
+}
+
+.create-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  background-color: #42b983;
+  color: white;
+  font-size: 38px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color 0.2s,
+    transform 0.05s;
+  outline: none;
+  -webkit-tap-highlight-color: transparent; /* 禁用 iOS/Android 的点击高亮 */
+  will-change: transform;
+  user-select: none;
+}
+
+.create-btn:focus {
+  outline: none;
+}
+
+.create-btn:focus-visible {
+  box-shadow: 0 0 0 3px rgba(66, 185, 131, 0.4);
+}
+
+.create-btn:hover {
+  background-color: #369b6f;
+}
+
+.create-btn:active {
+  transform: scale(0.9);
+}
+
+.create-btn:focus,
+.create-btn:active,
+.create-btn:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.create-btn:focus,
+.create-btn:active {
+  outline: none;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); /* 等效于无阴影但防止默认视觉残留 */
+}
+
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4); /* 半透明遮罩 */
+  z-index: 2000; /* 确保在最上层 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  padding: 20px;
 }
 </style>

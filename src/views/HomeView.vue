@@ -3,7 +3,6 @@ import { ref } from 'vue'
 import ListView from './ListView.vue'
 import ContactView from './ContactView.vue'
 import SelfView from './SelfView.vue'
-import CreateRoomView from './CreateRoomView.vue'
 
 const chatStr = 'chat'
 const contactStr = 'contact'
@@ -14,44 +13,48 @@ const inactiveColor = '#888'
 
 const getIconColor = (tab: string) => (currentTab.value === tab ? activeColor : inactiveColor)
 
-const showModal = ref(false)
+// const showModal = ref(false)
 
-// 浮动按钮位置
-const pos = ref({ x: 300, y: window.innerHeight - 120 })
+// // 浮动按钮位置
+// const pos = ref({ x: 300, y: window.innerHeight - 120 })
 
-let isDragging = false
-let offsetX = 0
-let offsetY = 0
+// let isDragging = false
+// let offsetX = 0
+// let offsetY = 0
 
-const startDrag = (e: MouseEvent | TouchEvent) => {
-  isDragging = true
-  const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
-  const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
-  offsetX = clientX - pos.value.x
-  offsetY = clientY - pos.value.y
+// const startDrag = (e: MouseEvent | TouchEvent) => {
+//   isDragging = true
+//   const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
+//   const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
+//   offsetX = clientX - pos.value.x
+//   offsetY = clientY - pos.value.y
 
-  document.addEventListener('mousemove', onDrag)
-  document.addEventListener('mouseup', stopDrag)
-  document.addEventListener('touchmove', onDrag, { passive: false })
-  document.addEventListener('touchend', stopDrag)
-}
+//   document.addEventListener('mousemove', onDrag)
+//   document.addEventListener('mouseup', stopDrag)
+//   document.addEventListener('touchmove', onDrag, { passive: false })
+//   document.addEventListener('touchend', stopDrag)
+// }
 
-const onDrag = (e: MouseEvent | TouchEvent) => {
-  if (!isDragging) return
-  const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
-  const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
+// const onDrag = (e: MouseEvent | TouchEvent) => {
+//   if (!isDragging) return
+//   const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
+//   const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
 
-  pos.value.x = Math.min(window.innerWidth - 60, Math.max(0, clientX - offsetX))
-  pos.value.y = Math.min(window.innerHeight - 100, Math.max(0, clientY - offsetY))
-}
+//   pos.value.x = Math.min(window.innerWidth - 60, Math.max(0, clientX - offsetX))
+//   pos.value.y = Math.min(window.innerHeight - 100, Math.max(0, clientY - offsetY))
+// }
 
-const stopDrag = () => {
-  isDragging = false
-  document.removeEventListener('mousemove', onDrag)
-  document.removeEventListener('mouseup', stopDrag)
-  document.removeEventListener('touchmove', onDrag)
-  document.removeEventListener('touchend', stopDrag)
-}
+// const stopDrag = () => {
+//   isDragging = false
+//   document.removeEventListener('mousemove', onDrag)
+//   document.removeEventListener('mouseup', stopDrag)
+//   document.removeEventListener('touchmove', onDrag)
+//   document.removeEventListener('touchend', stopDrag)
+// }
+
+// const changeModelValue = (value: boolean) => {
+//   showModal.value = value
+// }
 </script>
 
 <template>
@@ -128,21 +131,16 @@ const stopDrag = () => {
       </button>
     </nav>
 
-    <!-- 浮动按钮 -->
+    <!-- 浮动按钮
     <div
       class="floating-button"
       :style="{ left: pos.x + 'px', top: pos.y + 'px' }"
       @mousedown="startDrag"
       @touchstart.prevent="startDrag"
-      @click="showModal = true"
+      @click="changeModelValue(true)"
     >
       +
-    </div>
-
-    <!-- 模态创建房间 -->
-    <div class="modal-view" v-if="showModal" @click.self="showModal = false">
-      <CreateRoomView @close="showModal = false" />
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -224,9 +222,10 @@ nav button svg {
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.4);
-  z-index: 999;
+  z-index: 2000;
   display: flex;
   justify-content: center;
   align-items: center;
+  pointer-events: all; /* 保证可以拦截点击 */
 }
 </style>
