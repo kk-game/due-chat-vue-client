@@ -1,9 +1,11 @@
-import { Client, Packer } from 'due-client'
+import { Client, Packer, type Message } from 'due-client'
+import { TokenValidate } from './const'
 
-let client: Client | null = null
+export let WebSocketClient: Client | null = null
+
 
 export const connectWebSocket = (wsUrl: string, onOpen: () => void, onError: () => void) => {
-  client = new Client({
+  WebSocketClient = new Client({
     url: wsUrl,
     heartbeat: 10000,
     packer: new Packer({
@@ -14,16 +16,8 @@ export const connectWebSocket = (wsUrl: string, onOpen: () => void, onError: () 
     }),
   })
 
-  client.onConnect((c) => {
-    console.log('WebSocket 连接成功')
+  WebSocketClient.onConnect(() => {
     onOpen()
-
-    // 示例：发送同步请求
-    const tokenStr = localStorage.getItem('token')
-    const reqEncode = new TextEncoder().encode(JSON.stringify({ token: tokenStr }))
-
-    c.send({ route: 1000, buffer: reqEncode })
-
     // c.request(1000, buffer, 2000)
     //   .then((message) => {
     //     console.log('响应消息111: ', new TextDecoder().decode(message.buffer))
@@ -33,33 +27,127 @@ export const connectWebSocket = (wsUrl: string, onOpen: () => void, onError: () 
     //   })
   })
 
-  client.onDisconnect((c) => {
+  WebSocketClient.onDisconnect((c) => {
     console.log('WebSocket 连接断开')
     onError()
     // 可选：重新连接
     c.connect()
   })
 
-  client.onReceive((c, message) => {
-    console.log(
-      'reqId:' + message.seq,
-      'route:' + message.route,
-      '接收到消息: ' + new TextDecoder().decode(message.buffer),
-    )
+  WebSocketClient.onReceive((_c, message) => {
+    // console.log(
+    //   'reqId:' + message.seq,
+    //   'route:' + message.route,
+    //   '接收到消息: ' + new TextDecoder().decode(message.buffer),
+    // )
+    MsgMgr.HandleMessage(message)
   })
 
-  client.onHeartbeat((_c, millisecond) => {
+  WebSocketClient.onHeartbeat((_c, millisecond) => {
     if (millisecond) {
       console.log('服务器心跳时间戳: ', millisecond)
     }
   })
 
-  client.connect()
+  WebSocketClient.connect()
 }
 
 export const closeWebSocket = () => {
-  if (client) {
-    client.disconnect()
-    client = null
+  if (WebSocketClient) {
+    WebSocketClient.disconnect()
+    WebSocketClient = null
   }
+}
+
+
+export const MsgMgr = {
+  seqId: 0,
+  handlers: new Map<number, (message: object) => void>(),
+
+  //异步请求
+  async Request(route: number, msg: object, timeout: number = 2000) {
+    if (!WebSocketClient) {
+      console.error('WebSocket 连接未建立，无法发送请求')
+      return Promise.reject(new Error('WebSocket 连接未建立'))
+    }
+
+
+    const msgStr = JSON.stringify(msg)
+    const msgBuffer = new TextEncoder().encode(msgStr)
+    return WebSocketClient.request(route, msgBuffer, timeout)
+      .then((message) => {
+        const msgStr = new TextDecoder().decode(message.buffer)
+        try {
+          const msgObj = JSON.parse(msgStr)
+          return msgObj
+        } catch (e) {
+          console.error('解码路由' + route + '消息失败:', e)
+          return Promise.reject(new Error('解码消息失败'))
+        }
+      })
+      .catch((error) => {
+        console.error('请求被拒绝:', error)
+        return Promise.reject(error)
+      })
+  },
+
+  //同步发送,需要先监听
+  Send(route: number, msg: object) {
+    if (!WebSocketClient) {
+      console.error('WebSocket 连接未建立，无法发送消息')
+      return
+    }
+
+    this.seqId++
+    const msgStr = JSON.stringify(msg)
+    const msgBuffer = new TextEncoder().encode(msgStr)
+    WebSocketClient.send({ seq: this.seqId, route, buffer: msgBuffer })
+  },
+
+
+  Register(route: number, handler: (msg: object) => void) {
+    this.handlers.set(route, handler)
+  },
+
+  Unregister(route: number) {
+    this.handlers.delete(route)
+  },
+
+  HandleMessage(message: Message) {
+    const handler = this.handlers.get(message.route)
+    if (!handler) {
+      console.warn(`没有找到处理路由 ${message.route} 的处理器`)
+      return
+    }
+
+    const msgStr = new TextDecoder().decode(message.buffer)
+    try {
+      const msgObj = JSON.parse(msgStr)
+      handler(msgObj)
+    } catch (e) {
+      console.error('解码路由' + message.route + '消息失败:', e,)
+      return
+    }
+  },
+
+  StartConnect(wsUrl: string, errorCallback?: () => void) {
+    if (WebSocketClient && WebSocketClient.isConnecting() || WebSocketClient && WebSocketClient.isConnected()) {
+      console.warn('WebSocket 已经连接或正在连接')
+      return
+    }
+
+    // WebSocket 连接成功后，发送登录请求
+    connectWebSocket(wsUrl, () => {
+      console.log('WebSocket 连接成功')
+      const tokenStr = localStorage.getItem('token')
+      if (tokenStr) {
+        MsgMgr.Send(TokenValidate, { token: tokenStr })
+      }
+    }, () => {
+      console.error('WebSocket 连接失败')
+      if (errorCallback) {
+        errorCallback()
+      }
+    })
+  },
 }

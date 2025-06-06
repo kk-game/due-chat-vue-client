@@ -60,9 +60,13 @@ const getIconColor = (tab: string) => (currentTab.value === tab ? activeColor : 
 <template>
   <div class="app-container">
     <main class="main-content">
-      <component
-        :is="currentTab === chatStr ? ListView : currentTab === contactStr ? ContactView : SelfView"
-      />
+      <keep-alive>
+        <component
+          :is="
+            currentTab === chatStr ? ListView : currentTab === contactStr ? ContactView : SelfView
+          "
+        />
+      </keep-alive>
     </main>
 
     <nav class="bottom-nav">
@@ -81,6 +85,7 @@ const getIconColor = (tab: string) => (currentTab.value === tab ? activeColor : 
         </svg>
         <div>聊天室</div>
       </button>
+
       <button
         style="flex: 1"
         :class="{ active: currentTab === contactStr }"
@@ -104,6 +109,7 @@ const getIconColor = (tab: string) => (currentTab.value === tab ? activeColor : 
         </svg>
         <div>联系人</div>
       </button>
+
       <button
         style="flex: 1"
         :class="{ active: currentTab === selfStr }"
@@ -130,17 +136,6 @@ const getIconColor = (tab: string) => (currentTab.value === tab ? activeColor : 
         <div>我</div>
       </button>
     </nav>
-
-    <!-- 浮动按钮
-    <div
-      class="floating-button"
-      :style="{ left: pos.x + 'px', top: pos.y + 'px' }"
-      @mousedown="startDrag"
-      @touchstart.prevent="startDrag"
-      @click="changeModelValue(true)"
-    >
-      +
-    </div> -->
   </div>
 </template>
 

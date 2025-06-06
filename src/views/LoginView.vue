@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { connectWebSocket } from '@/utils/websocket'
+import { MsgMgr } from '@/utils/websocket'
 import { webHost } from '@/utils/const'
 
-const router = useRouter()
 const account = ref('admin123') // 设置默认值
 const password = ref('admin123') // 设置默认值
 const message = ref('')
@@ -55,18 +53,14 @@ const login = async () => {
       localStorage.setItem('password', password.value)
       localStorage.setItem('gate', back.gate)
       localStorage.setItem('token', back.token)
+
       const wsUrl = `${back.gate}/?token=${back.token}`
       console.log('WebSocket URL:', wsUrl)
-      connectWebSocket(
-        wsUrl,
-        () => {
-          message.value = '登录成功，正在跳转...'
-          router.push('/home')
-        },
-        () => {
-          message.value = 'WebSocket 连接失败'
-        },
-      )
+
+      MsgMgr.StartConnect(wsUrl, () => {
+        localStorage.removeItem('gate')
+        localStorage.removeItem('token')
+      })
     } else {
       message.value = '登录失败'
     }
