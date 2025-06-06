@@ -62,7 +62,7 @@ export const closeWebSocket = () => {
 
 export const MsgMgr = {
   seqId: 0,
-  handlers: new Map<number, (message: object) => void>(),
+  handlerArr: new Array<{ route: number, func: (msg: object) => void }>(),
 
   //异步请求
   async Request(route: number, msg: object, timeout: number = 2000) {
@@ -104,29 +104,32 @@ export const MsgMgr = {
     WebSocketClient.send({ seq: this.seqId, route, buffer: msgBuffer })
   },
 
-
   Register(route: number, handler: (msg: object) => void) {
-    this.handlers.set(route, handler)
+    this.handlerArr.push({ route: route, func: handler })
   },
 
-  Unregister(route: number) {
-    this.handlers.delete(route)
+  Unregister(route: number, func: (msg: object) => void) {
+    this.handlerArr = this.handlerArr.filter(evtCell => evtCell.route !== route || evtCell.func !== func)
   },
 
   HandleMessage(message: Message) {
-    const handler = this.handlers.get(message.route)
-    if (!handler) {
-      console.warn(`没有找到处理路由 ${message.route} 的处理器`)
-      return
+    const msgStr = new TextDecoder().decode(message.buffer)
+    let msgObj
+
+    try {
+      msgObj = JSON.parse(msgStr)
+    } catch (e) {
+      throw new Error(`处理路由 ${message.route} 的消息时发生错误 ${e}`)
     }
 
-    const msgStr = new TextDecoder().decode(message.buffer)
-    try {
-      const msgObj = JSON.parse(msgStr)
-      handler(msgObj)
-    } catch (e) {
-      console.error('解码路由' + message.route + '消息失败:', e,)
-      return
+    for (const evtCell of this.handlerArr) {
+      if (evtCell.route !== message.route) {
+        continue
+      }
+
+      if (evtCell.func) {
+        evtCell.func(msgObj)
+      }
     }
   },
 

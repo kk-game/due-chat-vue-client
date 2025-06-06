@@ -2,20 +2,20 @@
 import { roomInfoStore } from '@/utils/app_data'
 import CreateRoomView from './CreateRoomView.vue'
 import VirtualList from './VirtualList.vue'
-import { onActivated, onMounted, ref } from 'vue'
+import { onActivated, ref } from 'vue'
 import type { SingleRoomInfo } from '@/utils/type_struct'
+import emitter from '@/utils/mitt_evt'
+import { EvtUpdateRoomList } from '@/utils/const'
 
 const chatRooms = ref<SingleRoomInfo[]>([])
 const createRoomViewShow = ref(false)
 
-//页面加载时打印房间信息
-onMounted(() => {
+emitter.on(EvtUpdateRoomList, () => {
   chatRooms.value = roomInfoStore().getRoomInfo() as SingleRoomInfo[]
-  console.log('加载房间信息:', JSON.stringify(roomInfoStore().getRoomInfo()))
 })
 
 onActivated(() => {
-  console.log('显示界面')
+  chatRooms.value = roomInfoStore().getRoomInfo() as SingleRoomInfo[]
 })
 </script>
 

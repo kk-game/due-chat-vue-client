@@ -46,17 +46,14 @@ const login = async () => {
     }
 
     const back = result.data
-    console.log(JSON.stringify(result.data))
+    console.log('POST RESPONSE: ' + JSON.stringify(result.data))
 
     if (back.gate && back.token) {
       localStorage.setItem('account', account.value)
       localStorage.setItem('password', password.value)
       localStorage.setItem('gate', back.gate)
       localStorage.setItem('token', back.token)
-
       const wsUrl = `${back.gate}/?token=${back.token}`
-      console.log('WebSocket URL:', wsUrl)
-
       MsgMgr.StartConnect(wsUrl, () => {
         localStorage.removeItem('gate')
         localStorage.removeItem('token')
@@ -74,8 +71,22 @@ const login = async () => {
   <div class="login">
     <div class="login-container">
       <h1>登录或注册</h1>
-      <input v-model="account" type="text" placeholder="账号" />
-      <input v-model="password" type="password" placeholder="密码" />
+      <input
+        id="account-input"
+        name="account"
+        v-model="account"
+        type="text"
+        placeholder="账号"
+        autocomplete="username"
+      />
+      <input
+        id="password-input"
+        name="password"
+        v-model="password"
+        type="password"
+        placeholder="密码"
+        autocomplete="current-password"
+      />
       <div class="button-group">
         <button @click="register">注册</button>
         <button @click="login">登录</button>

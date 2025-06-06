@@ -221,7 +221,7 @@ onMounted(() => {
 }
 
 .main {
-  margin-top: 10px;
+  margin-top:;
   height: calc(
     100vh - 60px - env(safe-area-inset-top, 20px) - 60px - env(safe-area-inset-bottom, 0px) - 20px
   );
