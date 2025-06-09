@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import VirtualList from './VirtualList.vue'
+import VirtualList from '../components/VirtualList.vue'
 
 interface Contact {
   id: number

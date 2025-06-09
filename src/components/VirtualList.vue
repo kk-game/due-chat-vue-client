@@ -1,25 +1,7 @@
-<template>
-  <div ref="container" class="container" @scroll="handleScroll">
-    <!-- 撑开父级容器 -->
-    <div class="placeholder" :style="{ height: listHeight + 'px' }"></div>
-    <!-- 实际渲染内容 -->
-    <div class="list-wrapper" :style="{ transform: getTransform }">
-      <div
-        v-for="itemData in renderList"
-        :key="getKey(itemData)"
-        class="card-item"
-        :style="{ height: itemSize + 'px' }"
-      >
-        <slot :item="itemData">
-          <!-- 默认渲染 -->
-          {{ getLabel(itemData) }}
-        </slot>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
+/**
+ * 这是等高虚拟列表组件,适用于vue3,且数据是登高的情况下用
+ */
 import { ref, onMounted, computed } from 'vue'
 
 /**
@@ -84,6 +66,27 @@ function handleScroll(e: Event) {
   offset.value = scrollTop - (scrollTop % props.itemSize)
 }
 </script>
+
+<template>
+  <div ref="container" class="container" @scroll="handleScroll">
+    <!-- 撑开父级容器 -->
+    <div class="placeholder" :style="{ height: listHeight + 'px' }"></div>
+    <!-- 实际渲染内容 -->
+    <div class="list-wrapper" :style="{ transform: getTransform }">
+      <div
+        v-for="itemData in renderList"
+        :key="getKey(itemData)"
+        class="card-item"
+        :style="{ height: itemSize + 'px' }"
+      >
+        <slot :item="itemData">
+          <!-- 默认渲染 -->
+          {{ getLabel(itemData) }}
+        </slot>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .container {

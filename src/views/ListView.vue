@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { roomInfoStore } from '@/utils/app_data'
 import CreateRoomView from './CreateRoomView.vue'
-import VirtualList from './VirtualList.vue'
+import VirtualList from '../components/VirtualList.vue'
 import { onActivated, ref } from 'vue'
 import type { SingleRoomInfo } from '@/utils/type_struct'
 import emitter from '@/utils/mitt_evt'
-import { EvtUpdateRoomList } from '@/utils/const'
+import { EvtUpdateRoomList, RouteChat } from '@/utils/const'
+import router from '@/router'
 
 const chatRooms = ref<SingleRoomInfo[]>([])
 const createRoomViewShow = ref(false)
@@ -17,6 +18,11 @@ emitter.on(EvtUpdateRoomList, () => {
 onActivated(() => {
   chatRooms.value = roomInfoStore().getRoomInfo() as SingleRoomInfo[]
 })
+
+const onCreateRoom = () => {
+  // createRoomViewShow.value = true
+  router.replace(RouteChat)
+}
 </script>
 
 <template>
@@ -43,17 +49,15 @@ onActivated(() => {
 
     <!-- 创建房间按钮 -->
     <div class="create-room-btn">
-      <button class="create-btn" @click="createRoomViewShow = true">+</button>
+      <button class="create-btn" @mousedown="onCreateRoom">+</button>
     </div>
 
     <!-- 模态创建房间 -->
     <div class="modal-mask" v-if="createRoomViewShow" @click.self="createRoomViewShow = false">
-      <div class="modal-content">
-        <CreateRoomView
-          class="create-room-view"
-          @EvtCloseCreateRoomView="createRoomViewShow = false"
-        />
-      </div>
+      <CreateRoomView
+        class="create-room-view"
+        @EvtCloseCreateRoomView="createRoomViewShow = false"
+      />
     </div>
   </div>
 </template>
@@ -217,11 +221,5 @@ onActivated(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.modal-content {
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  padding: 20px;
 }
 </style>
