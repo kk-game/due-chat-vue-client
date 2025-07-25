@@ -1,26 +1,17 @@
-<script setup lang="ts">
-/**
- * 这是等高虚拟列表组件,适用于vue3,且数据是登高的情况下用
- */
+<script setup lang="ts" generic="T extends Record<string, any>">
 import { ref, onMounted, computed } from 'vue'
 
-/**
- * 通用组件 props
- * T 是用户传入的每项数据类型，默认为 Record<string, unknown>
- */
-type ListItem = Record<string, unknown>
-
+// 泛型 props
 const props = defineProps<{
-  listData: ListItem[]
+  listData: T[]
   itemSize: number
-  keyField?: string
-  labelField?: string
+  keyField?: keyof T
+  labelField?: keyof T
 }>()
 
 const container = ref<HTMLElement | null>(null)
 const containerHeight = ref(0)
 
-// 计算可见项数
 const renderCount = computed(() => Math.ceil(containerHeight.value / props.itemSize) + 1)
 
 const start = ref(0)
@@ -35,21 +26,19 @@ const renderList = computed(() =>
 
 const getTransform = computed(() => `translate3d(0, ${offset.value}px, 0)`)
 
-// 提取 key 字段函数（默认使用 "id"）
-function getKey(item: ListItem): string | number {
-  const keyField = props.keyField ?? 'id'
+function getKey(item: T): string | number {
+  const keyField = props.keyField ?? ('id' as keyof T)
   const key = item[keyField]
   if (typeof key === 'string' || typeof key === 'number') {
     return key
   }
-  console.warn(`Item is missing valid keyField: "${keyField}"`)
-  return JSON.stringify(item) // fallback（不推荐用于大数据量）
+  console.warn(`Item is missing valid keyField: "${String(keyField)}"`)
+  return JSON.stringify(item)
 }
 
-// 提取 label 字段函数（默认使用 "value"）
-function getLabel(item: ListItem): string {
-  const field = props.labelField ?? 'value'
-  const val = item[field]
+function getLabel(item: T): string {
+  const labelField = props.labelField ?? ('value' as keyof T)
+  const val = item[labelField]
   return typeof val === 'string' || typeof val === 'number' ? String(val) : ''
 }
 
@@ -69,9 +58,7 @@ function handleScroll(e: Event) {
 
 <template>
   <div ref="container" class="container" @scroll="handleScroll">
-    <!-- 撑开父级容器 -->
     <div class="placeholder" :style="{ height: listHeight + 'px' }"></div>
-    <!-- 实际渲染内容 -->
     <div class="list-wrapper" :style="{ transform: getTransform }">
       <div
         v-for="itemData in renderList"
@@ -80,7 +67,6 @@ function handleScroll(e: Event) {
         :style="{ height: itemSize + 'px' }"
       >
         <slot :item="itemData">
-          <!-- 默认渲染 -->
           {{ getLabel(itemData) }}
         </slot>
       </div>

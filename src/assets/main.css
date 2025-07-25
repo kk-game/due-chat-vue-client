@@ -1,5 +1,18 @@
 @import './base.css';
 
+:root {
+  /* 固定高度定义 */
+  --header-height: 60px;
+  --footer-height: 60px;
+
+  /* 含安全区域 */
+  --safe-header-height: calc(env(safe-area-inset-top) + var(--header-height));
+  --safe-footer-height: calc(env(safe-area-inset-bottom) + var(--footer-height));
+
+  /* 总边距高度（用于页面高度计算） */
+  --layout-vertical-spacing: calc(var(--safe-header-height) + var(--safe-footer-height) + 10px);
+}
+
 /* 重置默认样式 */
 * {
   margin: 0;

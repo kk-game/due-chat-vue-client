@@ -110,7 +110,7 @@ const backToHome = () => {
     <!-- 顶部栏 -->
     <header class="chat-header">
       <button class="back-button" @click="backToHome">←</button>
-      <h2 class="chat-title">张三</h2>
+      <p class="chat-title">张三</p>
     </header>
 
     <!-- 聊天列表 -->
@@ -172,7 +172,7 @@ const backToHome = () => {
   font-family: sans-serif;
 }
 .chat-header {
-  height: 60px;
+  height: env(safe-area-inset-top + 60px);
   background-color: #42b983;
   display: flex;
   align-items: center;
@@ -193,6 +193,8 @@ const backToHome = () => {
 }
 .chat-title {
   margin: 0;
+  font-weight: bold;
+  font-size: 1.2rem;
 }
 .chat-body {
   flex: 1;
@@ -268,7 +270,21 @@ const backToHome = () => {
   border: none;
   cursor: pointer;
 }
+.send-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
 .send-button svg {
+  display: block;
+  width: 26px;
+  height: 26px;
   color: #42b983;
 }
 </style>

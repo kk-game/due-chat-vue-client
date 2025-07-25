@@ -73,7 +73,7 @@ const onCreateRoom = () => {
 .header {
   height: 60px; /* 固定高度 */
   padding-top: env(safe-area-inset-top, 20px);
-  background: #fff;
+  background-color: #42b983;
   box-shadow: 0 2px 8px #0001;
   position: sticky;
   top: 0;
@@ -89,6 +89,7 @@ const onCreateRoom = () => {
   text-align: center;
   padding: 18px 0 12px 0;
   letter-spacing: 2px;
+  color: white;
 }
 
 .chat-list {

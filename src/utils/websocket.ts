@@ -45,7 +45,7 @@ export const connectWebSocket = (wsUrl: string, onOpen: () => void, onError: () 
 
   WebSocketClient.onHeartbeat((_c, millisecond) => {
     if (millisecond) {
-      console.log('服务器心跳时间戳: ', millisecond)
+      // console.log('服务器心跳时间戳: ', millisecond)
     }
   })
 

@@ -9,6 +9,13 @@ interface Contact {
   avatar: string
 }
 
+// 定义列表项的类型
+interface ContactListItem {
+  id: number
+  type: 'contact'
+  contact: Contact
+}
+
 // IndexedDB工具 - 简单封装
 function openDB(dbName: string, storeName: string): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -49,7 +56,6 @@ async function putToDB(
   })
 }
 
-// 生成联系人列表（和你之前代码一致）
 function generateContacts(): Contact[] {
   const remarks = ['朋友', '同事', '客户', '大学同学', '邻居', '亲戚', '校友']
   const avatarStyles = ['adventurer', 'avataaars', 'croodles', 'fun-emoji']
@@ -58,7 +64,7 @@ function generateContacts(): Contact[] {
 
   for (let i = 0; i < 26; i++) {
     const letter = String.fromCharCode(65 + i)
-    const contactCount = Math.floor(Math.random() * 6) + 4 // 4~9
+    const contactCount = Math.floor(Math.random() * 6) + 4
 
     for (let j = 0; j < contactCount; j++) {
       const name = `${letter}${j + 1}`
@@ -79,7 +85,7 @@ function generateContacts(): Contact[] {
 
 const contacts = ref<Contact[]>(generateContacts())
 
-const flatList = computed(() =>
+const flatList = computed<ContactListItem[]>(() =>
   contacts.value.map((contact) => ({
     id: contact.id,
     type: 'contact',
@@ -91,16 +97,13 @@ const DB_NAME = 'avatar-cache-db'
 const STORE_NAME = 'avatars'
 let db: IDBDatabase | null = null
 
-// 缓存头像的Blob URL映射：avatar url -> objectURL
 const avatarObjectUrlMap = ref(new Map<string, string>())
 
-// 初始化数据库
 async function initDB() {
   db = await openDB(DB_NAME, STORE_NAME)
 }
 initDB()
 
-// 读取头像缓存（Blob转ObjectURL）
 async function loadAvatarFromCache(url: string): Promise<string | null> {
   if (!db) return null
   try {
@@ -114,35 +117,30 @@ async function loadAvatarFromCache(url: string): Promise<string | null> {
   return null
 }
 
-// 缓存头像Blob
 async function cacheAvatarBlob(url: string, blob: Blob) {
   if (!db) return
   try {
     await putToDB(db, STORE_NAME, url, blob)
   } catch {
-    // 忽略缓存失败
+    // ignore
   }
 }
 
-// 下载图片Blob
 async function fetchAvatarBlob(url: string): Promise<Blob> {
   const res = await fetch(url)
   if (!res.ok) throw new Error('Fetch failed')
   return res.blob()
 }
 
-// 加载头像，先从缓存找，没有再网络请求并缓存
 async function getAvatarObjectUrl(url: string): Promise<string> {
   if (avatarObjectUrlMap.value.has(url)) {
     return avatarObjectUrlMap.value.get(url)!
   }
-  // 先查缓存
   const cachedUrl = await loadAvatarFromCache(url)
   if (cachedUrl) {
     avatarObjectUrlMap.value.set(url, cachedUrl)
     return cachedUrl
   }
-  // 网络请求
   try {
     const blob = await fetchAvatarBlob(url)
     await cacheAvatarBlob(url, blob)
@@ -150,15 +148,12 @@ async function getAvatarObjectUrl(url: string): Promise<string> {
     avatarObjectUrlMap.value.set(url, objectUrl)
     return objectUrl
   } catch {
-    // 失败返回空串，或者你可以用占位图URL
     return ''
   }
 }
 
-// 头像src映射: contact id -> avatar src
 const avatarSrcMap = ref(new Map<number, string>())
 
-// 初始化所有头像的加载过程
 async function initAvatarCache() {
   for (const contact of contacts.value) {
     const objUrl = await getAvatarObjectUrl(contact.avatar)
@@ -166,7 +161,6 @@ async function initAvatarCache() {
   }
 }
 
-// 组件挂载后开始初始化头像缓存
 onMounted(() => {
   initAvatarCache()
 })
@@ -174,7 +168,8 @@ onMounted(() => {
 
 <template>
   <div class="contact-page">
-    <header class="header">联系人</header>
+    <header class="header-title">联系人</header>
+
     <div class="main">
       <VirtualList :list-data="flatList" :item-size="80">
         <template #default="{ item }">
@@ -198,34 +193,30 @@ onMounted(() => {
 
 <style scoped>
 .contact-page {
-  height: 100vh;
+  height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 60px);
   display: flex;
   flex-direction: column;
   font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
   background-color: #f2f2f7;
 }
 
-.header {
-  height: 60px;
-  line-height: 60px;
-  font-size: 1.2rem;
+.header-title {
+  height: var(--safe-header-height);
+  padding-top: env(safe-area-inset-top);
+  line-height: var(--header-height);
+  background-color: #42b983;
+  color: white;
   text-align: center;
-  font-weight: 600;
-  border-bottom: 1px solid #dcdcdc;
-  background-color: #ffffffee;
-  color: #000;
+  font-size: 1rem;
   position: sticky;
   top: 0;
   z-index: 10;
-  backdrop-filter: blur(10px);
 }
 
 .main {
-  margin-top:;
-  height: calc(
-    100vh - 60px - env(safe-area-inset-top, 20px) - 60px - env(safe-area-inset-bottom, 0px) - 20px
-  );
-  overflow: hidden;
+  height: calc(100vh - var(--layout-vertical-spacing));
+  overflow-y: auto;
+  padding-bottom: env(safe-area-inset-bottom); /* 视觉上更自然 */
 }
 
 .contact-item {
